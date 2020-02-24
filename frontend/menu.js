@@ -11,6 +11,8 @@ const menu = {
           <option value="3">Mi</option>
           <option value="4" selected>Fa</option>
           <option value="5">Sol</option>
+          <option value="6">La</option>
+          <option value="7">Ti</option>
         </select>
       </div>
     </div>
@@ -28,7 +30,7 @@ const menu = {
       <label for="length" class="col-form-label col-2">Length:</label>
       <div class="col-2">
         <select id="length" class="form-control">
-          <option>20</option>
+          <option>10</option>
           <option selected>100</option>
         </select>
       </div>
@@ -38,6 +40,8 @@ const menu = {
       <div class="col-2">
         <select id="key" class="form-control">
           <option value="0">C</option>
+          <option value="7">G</option>
+          <option value="2">D</option>
       </select>
       </div>
       <div class="col-2">
