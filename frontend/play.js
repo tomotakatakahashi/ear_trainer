@@ -75,7 +75,7 @@ const play = {
                     clearInterval(timerId);
                     result.render(this);
                 }else{
-                    this.audioData.auto[this.gameSettings.playSeq[this.playIdx]].currentTime = 0;
+                    this.audioData.auto[this.gameSettings.playSeq[this.playIdx]].seek(0);
                     this.audioData.auto[this.gameSettings.playSeq[this.playIdx]].play();
                     this.playIdx++;
                     for(let i = 0; i < this.userPlayButtons.length; i++){
@@ -91,7 +91,7 @@ const play = {
         document.getElementById('gameArea').innerHTML = "Loading...";
         const autoAudioData = this.gameSettings.scale.pitch.
               map(x => this.gameSettings.rootNote + x).
-              map(x => new Audio(`mp3/${x}.mp3`));
+              map(x => new Howl({src: `mp3/${x}.mp3`}));
         const userAudioData = this.gameSettings.scale.pitch.
               map(x => this.gameSettings.rootNote + x).
               map(x => new Audio(`mp3/${x}.mp3`));
@@ -103,7 +103,7 @@ const play = {
         const timerId = setInterval(
             () => {
                 const HAVE_ENOUGH_DATA = 4;
-                if(
+                if(true || 
                     autoAudioData.every(x => x.readyState >= HAVE_ENOUGH_DATA)
                         && userAudioData.every(x => x.readyState >= HAVE_ENOUGH_DATA)
                 ){
