@@ -1,6 +1,4 @@
 const menu = {
-    mt: new MersenneTwister(new Date().getTime()),
-
     content: `
   <form>
     <div class="form-group form-row">
@@ -72,7 +70,7 @@ const menu = {
         const ret = [0];
         let prev = 0;
         while(ret.length < length){
-            let next = this.mt.nextInt(range - 1);
+            let next = Math.floor(Math.random() * (range - 1));
             if(next >= prev){
                 next++;
             }
