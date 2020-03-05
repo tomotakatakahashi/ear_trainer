@@ -1,5 +1,24 @@
 const result = {
-    render: function(playResult){
+    storeToLocalStorage: function(playData){
+        const storage = window.localStorage;
+        const storageData = storage.getItem('earTrainer');
+
+        const newData = {
+            defaultSettings: playData.gameSettings,
+            playHistory: [playData]
+        };
+        if(storageData != null){
+            const storageDataDecoded = JSON.parse(storageData);
+            newData.playHistory = storageDataDecoded.playHistory.concat(newData.playHistory);
+        }
+        storage.setItem('earTrainer', JSON.stringify(newData));
+    },
+    
+    render: function(playData){
+        this.storeToLocalStorage(playData);
+        
+        const gameSettings = playData.gameSettings;
+        const playResult = playData.playResult;
         const gameArea = document.getElementById('gameArea');
         gameArea.innerHTML = '';
 
@@ -7,22 +26,22 @@ const result = {
         seqShowArea.className = 'd-flex flex-wrap align-items-center';
         gameArea.appendChild(seqShowArea);
 
-        for(let i = 0; i < playResult.gameSettings.playSeq.length; i++){
+        for(let i = 0; i < gameSettings.playSeq.length; i++){
             const div = document.createElement('div');
             div.className = 'm-2 p-3 align-items-center';
-            if(playResult.gameSettings.playSeq[i] == playResult.userSeq[i]){
+            if(gameSettings.playSeq[i] == playResult.userSeq[i]){
                 const p = document.createElement('p');
-                p.innerText = playResult.gameSettings.scale.name[playResult.gameSettings.playSeq[i]];
+                p.innerText = gameSettings.scale.name[gameSettings.playSeq[i]];
                 p.className = 'text-success';
                 div.appendChild(p);
             }else{
                 const p1 = document.createElement('p'), p2 = document.createElement('p');
-                p1.innerText = playResult.gameSettings.scale.name[playResult.gameSettings.playSeq[i]];
+                p1.innerText = gameSettings.scale.name[gameSettings.playSeq[i]];
                 p1.className = 'text-info';
                 if(playResult.userSeq[i] == -1){
                     p2.innerText = '-';
                 }else{
-                    p2.innerText = playResult.gameSettings.scale.name[playResult.userSeq[i]];
+                    p2.innerText = gameSettings.scale.name[playResult.userSeq[i]];
                 }
                 p2.className = 'text-danger';
                 div.appendChild(p1);

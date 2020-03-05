@@ -1,24 +1,20 @@
 const play = {
-    playIdx: 0,
+    playIdx: -1,
     audioData: {},
     gameSettings: {},
     userSeq: [],
     userPlayButtons: [],
     buttonOnClick: function(idx){
-        //this.audioData.user[idx].currentTime = 0;
-        //this.audioData.user[idx].play();
-
-        this.userSeq[this.playIdx - 1] = idx;
+        this.userSeq[this.playIdx] = idx;
         for(let i = 0; i < this.userPlayButtons.length; i++){
             this.userPlayButtons[i].className = 'btn btn-secondary btn-block';
-            //this.userPlayButtons[i].disabled = true;
         }
 
-        if(this.gameSettings.playSeq[this.playIdx - 1] == idx){
+        if(this.gameSettings.playSeq[this.playIdx] == idx){
             this.userPlayButtons[idx].className = 'btn btn-success btn-block';
         }else{
             this.userPlayButtons[idx].className = 'btn btn-danger btn-block';
-            this.userPlayButtons[this.gameSettings.playSeq[this.playIdx - 1]].className = 'btn btn-info btn-block';
+            this.userPlayButtons[this.gameSettings.playSeq[this.playIdx]].className = 'btn btn-info btn-block';
         }
     },
 
@@ -68,16 +64,22 @@ const play = {
         const interval = MS_PER_SEC / (this.gameSettings.tempo / SEC_PER_MIN);
         this.userSeq = new Array(this.gameSettings.length).fill(-1);
         
-        this.playIdx = 0;
+        this.playIdx = -1;
         const timerId = setInterval(
             () => {
+                this.playIdx++;
                 if(this.playIdx >= this.gameSettings.playSeq.length){
                     clearInterval(timerId);
-                    result.render(this);
+                    result.render({
+                        gameSettings: this.gameSettings,
+                        playResult: {
+                            userSeq: this.userSeq,
+                            endDate: new Date()
+                        }
+                    });
                 }else{
-                    this.audioData.auto[this.gameSettings.playSeq[this.playIdx]].seek(0);
-                    this.audioData.auto[this.gameSettings.playSeq[this.playIdx]].play();
-                    this.playIdx++;
+                    this.audioData[this.gameSettings.playSeq[this.playIdx]].seek(0);
+                    this.audioData[this.gameSettings.playSeq[this.playIdx]].play();
                     for(let i = 0; i < this.userPlayButtons.length; i++){
                         this.userPlayButtons[i].disabled = false;
                         this.userPlayButtons[i].className = 'btn btn-primary btn-block';
@@ -89,24 +91,13 @@ const play = {
     },
     loadAndPlay: function(){
         document.getElementById('gameArea').innerHTML = "Loading...";
-        const autoAudioData = this.gameSettings.scale.pitch.
+        this.audioData = this.gameSettings.scale.pitch.
               map(x => this.gameSettings.rootNote + x).
               map(x => new Howl({src: `mp3/${x}.mp3`}));
-        const userAudioData = this.gameSettings.scale.pitch.
-              map(x => this.gameSettings.rootNote + x).
-              map(x => new Audio(`mp3/${x}.mp3`));
-        this.audioData = {
-            auto: autoAudioData,
-            user: userAudioData
-        };
-        
+
         const timerId = setInterval(
             () => {
-                const HAVE_ENOUGH_DATA = 4;
-                if(true || 
-                    autoAudioData.every(x => x.readyState >= HAVE_ENOUGH_DATA)
-                        && userAudioData.every(x => x.readyState >= HAVE_ENOUGH_DATA)
-                ){
+                if(this.audioData.every(x => x.state() == 'loaded')){
                     clearInterval(timerId);
                     this.playAndResult();
                 }
