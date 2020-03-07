@@ -1,15 +1,14 @@
 const result = {
     storeToLocalStorage: function(playData){
         const storage = window.localStorage;
-        const storageData = storage.getItem('earTrainer');
+        const storageData = JSON.parse(storage.getItem('earTrainer'));
 
         const newData = {
-            defaultSettings: playData.gameSettings,
+            defaultSettings: storageData.defaultSettings,
             playHistory: [playData]
         };
-        if(storageData != null){
-            const storageDataDecoded = JSON.parse(storageData);
-            newData.playHistory = storageDataDecoded.playHistory.concat(newData.playHistory);
+        if(storageData.playHistory != null){
+            newData.playHistory = storageData.playHistory.concat(newData.playHistory);
         }
         storage.setItem('earTrainer', JSON.stringify(newData));
     },
@@ -20,7 +19,18 @@ const result = {
         const gameSettings = playData.gameSettings;
         const playResult = playData.playResult;
         const gameArea = document.getElementById('gameArea');
-        gameArea.innerHTML = '';
+        gameArea.innerHTML = `
+<div>
+<button id="toMenuButton" type="button" class="btn btn-primary">Menu</button>
+<button id="restartButton" type="button" class="btn btn-primary">Restart</button>
+</div>
+`;
+        document.getElementById('toMenuButton').onclick = function(){
+            menu.render();
+        };
+        document.getElementById('restartButton').onclick = function(){
+            play.start(gameSettings);
+        };
 
         const seqShowArea = document.createElement('div');
         seqShowArea.className = 'd-flex flex-wrap align-items-center';

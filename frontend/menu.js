@@ -6,8 +6,8 @@ const menu = {
       <div class="col-2">
         <select id="range" class="form-control">
           <option value="2">Re</option>
-          <option value="3">Mi</option>
-          <option value="4" selected>Fa</option>
+          <option value="3" selected>Mi</option>
+          <option value="4">Fa</option>
           <option value="5">Sol</option>
           <option value="6">La</option>
           <option value="7">Ti</option>
@@ -18,8 +18,8 @@ const menu = {
       <label for="tempo" class="col-form-label col-2">Tempo:</label>
       <div class="col-2">
         <select id="tempo" class="form-control">
-          <option>40</option>
-          <option selected>60</option>
+          <option selected>40</option>
+          <option>60</option>
           <option>90</option>
         </select>
       </div>
@@ -29,7 +29,9 @@ const menu = {
       <div class="col-2">
         <select id="length" class="form-control">
           <option>10</option>
-          <option selected>100</option>
+          <option selected>40</option>
+          <option>60</option>
+          <option>100</option>
         </select>
       </div>
     </div>
@@ -38,12 +40,21 @@ const menu = {
       <div class="col-2">
         <select id="key" class="form-control">
           <option value="0">C</option>
-          <option value="7">G</option>
+          <option value="1">Db</option>
           <option value="2">D</option>
+          <option value="3">Eb</option>
+          <option value="4">E</option>
+          <option value="5">F</option>
+          <option value="6">Gb</option>
+          <option value="7">G</option>
+          <option value="8">Ab</option>
+          <option value="9">A</option>
+          <option value="10">Bb</option>
+          <option value="11">B</option>
       </select>
       </div>
       <div class="col-2">
-        <button type="button" class="btn btn-primary col-auto">Shuffle</button>
+        <button id="shuffleButton" type="button" class="btn btn-primary col-auto">Shuffle</button>
         </div>
     </div>
     <div class="form-group form-row">
@@ -96,15 +107,48 @@ const menu = {
         }
         return gameSettings;
     },
+    getDefaultSettings: function(){
+        const storageData = window.localStorage.getItem('earTrainer');
+        if(storageData == null){
+            return null;
+        }
+
+        return JSON.parse(storageData).defaultSettings;
+    },
+    setDefaultSettings: function(gameSettings){
+        const storageDataStr = window.localStorage.getItem('earTrainer');
+        let storageData = {}
+        if(storageDataStr != null){
+            storageData = JSON.parse(storageDataStr);
+        }
+        storageData.defaultSettings = gameSettings;
+
+        window.localStorage.setItem('earTrainer', JSON.stringify(storageData));
+    },
     render: function() {
         const gameArea = document.getElementById("gameArea");
         gameArea.innerHTML = this.content;
+
+        const defaultSettings = this.getDefaultSettings();
+        if(defaultSettings != null){
+            document.getElementById('range').value = defaultSettings.range;
+            document.getElementById('tempo').value = defaultSettings.tempo;
+            document.getElementById('length').value = defaultSettings.length;
+            document.getElementById('key').value = defaultSettings.key;
+        }
 
         const startButton = document.getElementById("startButton");
         startButton.onclick =
             () => {
                 const gameSettings = this.generateGameSettings();
+                this.setDefaultSettings(gameSettings);
                 play.start(gameSettings);
             };
+
+        const shuffleButton = document.getElementById('shuffleButton');
+        shuffleButton.onclick = function(){
+            const keySelect = document.getElementById('key');
+            keySelect.selectedIndex = Math.floor(Math.random() * keySelect.length);
+        }
     }
 };
