@@ -53,19 +53,5 @@
             console.log("Failed to save to localStorage. Are you in private mode?");
         }
     });
-
-
-    const charts = [];
-    app.ports.addNewChart.subscribe(function(data){
-        const canvas = document.getElementById(data.canvasId);
-        const newChart = new Chart(canvas.getContext('2d'), data.chartConfig);
-        charts.push(newChart);
-    });
-
-    app.ports.updateChart.subscribe(function(data){
-        const chart = charts[data.chartIdx];
-        chart.config = data.chartConfig;
-        chart.update();
-    });
   </script>
 </html>

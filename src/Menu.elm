@@ -91,20 +91,6 @@ stringToPitchRange str =
             Nothing
 
 
-
-{-
-   modelEncoder : Model -> Json.Encode.Value
-   modelEncoder model =
-       Json.Encode.object
-           [ ( "degreeRange", Json.Encode.int model.degreeRange)
-           , ("tempo", Json.Encode.int model.tempo)
-           , ("length", Json.Encode.int model.length)
-           , ("key", keyEncoder model.key)
-           , ("scaleConstitution", scaleConstitutionEncoder model.scale.constitution)
-           , ("pitchRange", Json.Encode.string (pitchRangeToString model.pitchRange))]
--}
-
-
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( defaultModel
@@ -165,9 +151,6 @@ update msg model =
 
         ToErrorPage errorMessage ->
             ( model, Cmd.none )
-
-
-
 
 
 handleStartButton : Model -> Msg

@@ -23,6 +23,7 @@ CONTENT_BUCKET_NAME=ear-trainer-content
 aws s3 mb s3://${LOGGING_BUCKET_NAME}
 aws s3 mb s3://${CONTENT_BUCKET_NAME}
 
+aws s3 rm --recursive s3://${CONTENT_BUCKET_NAME}
 aws s3 cp --recursive deployment s3://${CONTENT_BUCKET_NAME}
 
 aws cloudformation deploy \

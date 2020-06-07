@@ -153,10 +153,12 @@ update msg model =
 
                         Just t ->
                             let
-                                newLocalStorageData = {localStorageData| playHistory = Array.push {gameSettings = pModel.gameSettings, playResult = {userSeq = pModel.userSeq, startDate = Time.posixToMillis t}} localStorageData.playHistory}
+                                newLocalStorageData =
+                                    { localStorageData | playHistory = Array.push { gameSettings = pModel.gameSettings, playResult = { userSeq = pModel.userSeq, startDate = Time.posixToMillis t } } localStorageData.playHistory }
                             in
-                            ( { pageModel = SModel { gameSettings = pModel.gameSettings, startTime = t, userSeq = pModel.userSeq }, localStorageData = newLocalStorageData},
-                                  LocalStorage.saveLocalStorage (Json.Encode.encode 0 (LocalStorage.encodeLocalStorageData newLocalStorageData) ))
+                            ( { pageModel = SModel { gameSettings = pModel.gameSettings, startTime = t, userSeq = pModel.userSeq }, localStorageData = newLocalStorageData }
+                            , LocalStorage.saveLocalStorage (Json.Encode.encode 0 (LocalStorage.encodeLocalStorageData newLocalStorageData))
+                            )
 
                 _ ->
                     let
@@ -168,22 +170,16 @@ update msg model =
         ( SMsg sMsg, SModel sModel ) ->
             case sMsg of
                 S.ToMenuPage ->
-                    ( {model| pageModel = MModel model.localStorageData.defaultMenuOptions}, Cmd.none)
+                    ( { model | pageModel = MModel model.localStorageData.defaultMenuOptions }, Cmd.none )
+
                 S.Retry ->
-                    ( {model| pageModel = PRModel {gameSettings = sModel.gameSettings, startTime=Nothing}}, Cmd.map PRMsg PR.startPrepare)
+                    ( { model | pageModel = PRModel { gameSettings = sModel.gameSettings, startTime = Nothing } }, Cmd.map PRMsg PR.startPrepare )
 
         _ ->
             ( model, Cmd.none )
 
 
 
-{-
-   _ ->
-       let
-           (newSModel, sCmd) = S.update sMsg sModel
-       in
-           (SModel newSModel, Cmd.map SMsg sCmd)
--}
 -- SUBSCRIPTIONS
 
 
