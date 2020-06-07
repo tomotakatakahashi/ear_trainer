@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Ear Training">
+    <meta name="author" content="Tomotaka Takahashi">
+    <link rel="stylesheet" type="text/css" href="bulma.min.css">
+    <script type="text/javascript" src="eartrainer.js"></script>
+    <script type="text/javascript" src="howler.min.js"></script>
+    <script type="text/javascript" src="Chart.bundle.min.js"></script>
+    <title>Ear Trainer</title>
+  </head>
+  <body>
+    <div id="myapp"></div>
+  </body>
+  <script type="text/javascript">
+    const app = Elm.Main.init({
+        node: document.getElementById('myapp')
+    });
+
+    let loadedAudio = [];
+
+    app.ports.loadAudio.subscribe(function(audioPaths){
+        loadedAudio = audioPaths.
+            map(x => new Howl({src: x}));
+    });
+
+    app.ports.queryLoadState.subscribe(function(){
+        app.ports.receiveLoadState.send(loadedAudio.map(x => x.state()));
+    });
+
+    app.ports.playAudio.subscribe(function(idx){
+        loadedAudio[idx].play();
+    });
+
+
+    const lsKey = 'earTrainer';
+
+    app.ports.queryLocalStorage.subscribe(function(){
+        const data = window.localStorage.getItem(lsKey);
+        if(data !== null){
+            app.ports.receiveLocalStorage.send(data);
+        }else{
+            app.ports.receiveLocalStorage.send("");
+        }
+    });
+
+    app.ports.saveLocalStorage.subscribe(function(data){
+        try{
+            window.localStorage.setItem(lsKey, data);
+        }catch (err){
+            console.log("Failed to save to localStorage. Are you in private mode?");
+        }
+    });
+
+
+    const charts = [];
+    app.ports.addNewChart.subscribe(function(data){
+        const canvas = document.getElementById(data.canvasId);
+        const newChart = new Chart(canvas.getContext('2d'), data.chartConfig);
+        charts.push(newChart);
+    });
+
+    app.ports.updateChart.subscribe(function(data){
+        const chart = charts[data.chartIdx];
+        chart.config = data.chartConfig;
+        chart.update();
+    });
+  </script>
+</html>
